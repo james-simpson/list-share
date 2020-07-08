@@ -1,0 +1,19 @@
+import * as firebase from 'firebase';
+import '@firebase/auth';
+import '@firebase/firestore';
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyBzIR7S6lCe3KCKSC7BMJBoz-z2caz6m9M',
+//   authDomain: 'your-auth-domain-b1234.firebaseapp.com',
+//   databaseURL: 'https://your-database-name.firebaseio.com',
+  projectId: 'list-share-564e9',
+  storageBucket: 'list-share-564e9.appspot.com',
+//   messagingSenderId: '12345-insert-yourse',
+  appId: '1:757393836036:android:b0bb2850a8b890aab30d51',
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+export { firebase };
