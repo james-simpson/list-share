@@ -15,31 +15,26 @@ const TodoList = ({listId}) => {
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const listRef = firebase
+  const todosRef = firebase
     .firestore()
     .collection('lists')
-    .doc(listId);
+    .doc(listId)
+    .collection('todos');
 
   // We only try to update the text of a todo 500ms after the user has stopped typing.
   // This makes the UI less janky and stops us hammering the DB with updates.
   const delayedTextUpdate = useRef(
     _.debounce((id, text) => {
-      listRef
-        .collection('todos')
-        .doc(id)
-        .update({text});
+      todosRef.doc(id).update({text});
     }, 500),
   ).current;
 
   useEffect(() => {
-    listRef
-      .collection('todos')
-      .orderBy('createdAt')
-      .onSnapshot(snap => {
-        const todos = snap.docs.map(doc => ({...doc.data(), id: doc.id}));
-        setTodos(todos);
-        setLoading(false);
-      });
+    todosRef.orderBy('createdAt').onSnapshot(snap => {
+      const todos = snap.docs.map(doc => ({...doc.data(), id: doc.id}));
+      setTodos(todos);
+      setLoading(false);
+    });
   }, []);
 
   const openTodos = todos.filter(todo => !todo.completed);
@@ -55,15 +50,12 @@ const TodoList = ({listId}) => {
       completed: false,
     };
 
-    listRef.collection('todos').add(todo);
+    todosRef.add(todo);
   };
 
   // Update
   const updateCompleted = (id, completed) => {
-    listRef
-      .collection('todos')
-      .doc(id)
-      .update({completed});
+    todosRef.doc(id).update({completed});
   };
 
   const updateTodoText = (id, text) => {
@@ -77,10 +69,7 @@ const TodoList = ({listId}) => {
 
   // Delete
   const removeTodo = id => {
-    listRef
-      .collection('todos')
-      .doc(id)
-      .delete();
+    todosRef.doc(id).delete();
   };
 
   // Render
