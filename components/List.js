@@ -4,9 +4,9 @@ import ListItem from './ListItem'
 List = ({ items, onCompletedChange, onTextChange, onDelete }) =>
   items.map((item, i) => (
     <ListItem
-      text={item.name}
+      text={item.text}
       completed={item.completed}
-      onCompletedChange={() => onCompletedChange(item.id)}
+      onCompletedChange={completed => onCompletedChange(item.id, completed)}
       onTextChange={text => onTextChange(item.id, text)}
       onDelete={() => onDelete(item.id)}
       key={item.id}

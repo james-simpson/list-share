@@ -4,8 +4,8 @@ import '@firebase/firestore';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBzIR7S6lCe3KCKSC7BMJBoz-z2caz6m9M',
-//   authDomain: 'your-auth-domain-b1234.firebaseapp.com',
-//   databaseURL: 'https://your-database-name.firebaseio.com',
+  authDomain: 'list-share-564e9.firebaseapp.com',
+  // databaseURL: 'https://list-share-564e9.firebaseio.com',
   projectId: 'list-share-564e9',
   storageBucket: 'list-share-564e9.appspot.com',
 //   messagingSenderId: '12345-insert-yourse',

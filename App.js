@@ -58,7 +58,11 @@ import { decode, encode } from 'base-64'
 if (!global.btoa) { global.btoa = encode }
 if (!global.atob) { global.atob = decode }
 import { firebase } from './src/firebase/config'
-import { set } from 'lodash';
+
+// Suppress a warning for a known issue with React Native + Firebase
+// See https://github.com/firebase/firebase-js-sdk/issues/97
+import { YellowBox } from 'react-native';
+YellowBox.ignoreWarnings(['Setting a timer']);
 
 const Stack = createStackNavigator();
 
@@ -68,28 +72,7 @@ export default function App() {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    // const usersRef = firebase.firestore().collection('users');
     firebase.auth().onAuthStateChanged(user => {
-      // alert('state changed', user)
-      // if (user) {
-      //   // usersRef
-      //   //   .doc(user.uid)
-      //   //   .get()
-      //   //   .then((document) => {
-      //   //     const userData = document.data()
-      //   //     setLoading(false)
-      //   //     setUser(userData)
-      //   //   })
-      //   //   .catch((error) => {
-      //   //     setLoading(false)
-      //   //   });
-
-      //   setLoading(false)
-      //   setUser(user)
-      // } else {
-      //   setLoading(false)
-      // }
-
       setLoading(false)
       setUser(user)
     });

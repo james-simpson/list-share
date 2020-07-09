@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   StyleSheet,
+  ScrollView,
 } from 'react-native';
 
 import {firebase} from '../../firebase/config';
@@ -16,13 +17,19 @@ const onLogoutPress = () => {
 };
 
 export default function HomeScreen(props) {
+  // TODO - don't hardcode
+  const listId = 'rafEvIFrryiaU2u4Ezq7';
+
   return (
-    <View>
-      <Text>Home Screen</Text>
-      <TodoList />
+    <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={() => onLogoutPress()}>
         <Text style={styles.buttonTitle}>Log out</Text>
       </TouchableOpacity>
+      {/* keyboardShouldPersistTaps='always' allows moving focus from
+          one TextInput to another within a ScrollView in one touch */}
+      <ScrollView keyboardShouldPersistTaps="always">
+        <TodoList listId={listId} />
+      </ScrollView>
     </View>
   );
 }
@@ -30,33 +37,19 @@ export default function HomeScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-  },
-  title: {},
-  logo: {
-    flex: 1,
-    height: 120,
-    width: 90,
-    alignSelf: 'center',
-    margin: 30,
-  },
-  input: {
-    height: 48,
-    borderRadius: 5,
-    overflow: 'hidden',
-    backgroundColor: 'white',
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 30,
-    marginRight: 30,
-    paddingLeft: 16,
+    backgroundColor: '#f9f781',
+    justifyContent: 'center',
+    paddingTop: 15,
+    paddingBottom: 15,
+    paddingLeft: 20,
+    paddingRight: 20,
   },
   button: {
     backgroundColor: '#788eec',
-    marginLeft: 30,
-    marginRight: 30,
-    marginTop: 20,
-    height: 48,
+    alignSelf: 'flex-end',
+    padding: 10,
+    marginBottom: 10,
+    width: 100,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -65,21 +58,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily: 'roboto',
-  },
-  footerView: {
-    flex: 1,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  footerText: {
-    fontSize: 16,
-    color: '#2e2e2d',
-  },
-  footerLink: {
-    color: '#788eec',
-    fontWeight: 'bold',
-    fontSize: 16,
     fontFamily: 'roboto',
   },
 });

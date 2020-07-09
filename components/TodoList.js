@@ -1,126 +1,107 @@
-import React from 'react'
-import { View, Text } from 'react-native'
-import List from './List'
-import AddItemInput from './AddItemInput'
-import _ from 'lodash'
-import api from '../api'
+import React, {useEffect, useState, useRef} from 'react';
+import {View, Text} from 'react-native';
+import List from './List';
+import AddItemInput from './AddItemInput';
+import _ from 'lodash';
 
-class TodoList extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      items: [],
-      loading: false,
-      updateInProgress: false
-    }
+import {firebase} from '../src/firebase/config';
 
-    // this.loadItems()
+// Added to work around an with the firebase connection
+// See https://github.com/firebase/firebase-js-sdk/issues/2923
+// There may be a better way to fix it, but this works
+firebase.firestore().settings({experimentalForceLongPolling: true});
+
+const TodoList = ({listId}) => {
+  const [todos, setTodos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const listRef = firebase
+    .firestore()
+    .collection('lists')
+    .doc(listId);
+
+  // We only try to update the text of a todo 500ms after the user has stopped typing.
+  // This makes the UI less janky and stops us hammering the DB with updates.
+  const delayedTextUpdate = useRef(
+    _.debounce((id, text) => {
+      listRef
+        .collection('todos')
+        .doc(id)
+        .update({text});
+    }, 500),
+  ).current;
+
+  useEffect(() => {
+    listRef
+      .collection('todos')
+      .orderBy('createdAt')
+      .onSnapshot(snap => {
+        const todos = snap.docs.map(doc => ({...doc.data(), id: doc.id}));
+        setTodos(todos);
+        setLoading(false);
+      });
+  }, []);
+
+  const openTodos = todos.filter(todo => !todo.completed);
+  const closedTodos = todos.filter(todo => todo.completed);
+
+  const setCompleted = (id, completed) => {
+    listRef
+      .collection('todos')
+      .doc(id)
+      .update({completed});
+  };
+
+  const updateTodoText = (id, text) => {
+    const updatedTodos = todos.map(todo =>
+      todo.id === id ? {...todo, text} : todo,
+    );
+
+    setTodos(updatedTodos);
+    delayedTextUpdate(id, text);
+  };
+
+  const addTodo = text => {
+    const todo = {
+      text: text,
+      authorId: 'myUserId',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      completed: false,
+    };
+
+    listRef.collection('todos').add(todo);
+  };
+
+  const removeTodo = id => {
+    listRef
+      .collection('todos')
+      .doc(id)
+      .delete();
+  };
+
+  if (loading) {
+    return <Text style={{fontSize: 20}}>Loading...</Text>;
   }
 
-  // componentDidMount() {
-  //   setInterval(() => { this.loadItems() }, 1000)
-  // }
+  return (
+    <View>
+      {/* Todos*/}
+      <List
+        items={openTodos}
+        onCompletedChange={setCompleted}
+        onTextChange={updateTodoText}
+        onDelete={removeTodo}
+      />
+      {/* Add a new todo */}
+      <AddItemInput style={{marginBottom: 20}} onAdd={addTodo} />
+      {/* Completed todos*/}
+      <List
+        items={closedTodos}
+        onCompletedChange={setCompleted}
+        onDelete={removeTodo}
+      />
+    </View>
+  );
+};
 
-  loadItems () {
-    if (!this.state.updateInProgress) {
-      return api.getAll()
-        .then(response => {
-          this.setState({
-            items: response.data,
-            loading: false
-          })
-        })
-    }
-  }
-
-  openItems () {
-    return this.state.items.filter(item => !item.completed)
-  }
-
-  closedItems () {
-    return this.state.items.filter(item => item.completed)
-  }
-
-  toggleItemCheckbox (id) {
-    const items = this.state.items
-    const updatedItems = this.state.items.map(item =>
-      item.id === id
-        ? { ...item, completed: !item.completed }
-        : item
-    )
-    this.setState({ items: updatedItems }) 
-  }
-
-  updateItemName (id, name) {
-    const updatedItems = this.state.items.map(item =>
-      item.id === id
-        ? { ...item, name: name }
-        : item
-    )
-    this.setState({ items: updatedItems })
-  }
-
-  addItem (itemName) {
-    const tempId = _.uniqueId()
-    const item = { name: itemName, completed: false, id: tempId }
-    this.setState({
-      items: [ ...this.state.items, item ],
-      updateInProgress: true
-    })
-
-    api.add(itemName)
-      .then(id => {
-        const updatedItems = this.state.items.map(item =>
-          item.id === tempId
-            ? { ...item, id: id }
-            : item
-        )
-        this.setState({
-          items: updatedItems,
-          updateInProgress: false
-        })
-      })
-  }
-
-  removeItem (id) {
-    const updatedItems = this.state.items.filter(x => x.id !== id)
-    this.setState({
-      items: updatedItems,
-      updateInProgress: true
-    })
-    api.delete(id).then(() => {
-      this.setState({ updateInProgress: false })
-    })
-  }
-
-  render () {
-    if (this.state.loading) {
-      return <Text style={{ fontSize: 20 }}>Loading...</Text>
-    }
-
-    return (
-      <View>
-        {/* Todo items*/}
-        <List
-          items={this.openItems()}
-          onCompletedChange={id => this.toggleItemCheckbox(id)}
-          onTextChange={(id, name) => this.updateItemName(id, name)}
-          onDelete={id => this.removeItem(id)}
-        />
-        {/* Add a new item */}
-        <AddItemInput
-          style={{marginBottom: 20}}
-          onAdd={itemName => this.addItem(itemName)}
-        />
-        {/* Completed items*/}
-        <List
-          items={this.closedItems()}
-          onCompletedChange={id => this.toggleItemCheckbox(id)}
-          onDelete={id => this.removeItem(id)}
-        />
-      </View>
-    )
-  }
-}
-
-export default TodoList
+export default TodoList;
