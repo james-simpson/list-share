@@ -45,7 +45,21 @@ const TodoList = ({listId}) => {
   const openTodos = todos.filter(todo => !todo.completed);
   const closedTodos = todos.filter(todo => todo.completed);
 
-  const setCompleted = (id, completed) => {
+  // Create
+  const addTodo = text => {
+    const todo = {
+      text: text,
+      // TODO - use real user id
+      authorId: 'myUserId',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      completed: false,
+    };
+
+    listRef.collection('todos').add(todo);
+  };
+
+  // Update
+  const updateCompleted = (id, completed) => {
     listRef
       .collection('todos')
       .doc(id)
@@ -61,17 +75,7 @@ const TodoList = ({listId}) => {
     delayedTextUpdate(id, text);
   };
 
-  const addTodo = text => {
-    const todo = {
-      text: text,
-      authorId: 'myUserId',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      completed: false,
-    };
-
-    listRef.collection('todos').add(todo);
-  };
-
+  // Delete
   const removeTodo = id => {
     listRef
       .collection('todos')
@@ -79,6 +83,7 @@ const TodoList = ({listId}) => {
       .delete();
   };
 
+  // Render
   if (loading) {
     return <Text style={{fontSize: 20}}>Loading...</Text>;
   }
@@ -88,7 +93,7 @@ const TodoList = ({listId}) => {
       {/* Todos*/}
       <List
         items={openTodos}
-        onCompletedChange={setCompleted}
+        onCompletedChange={updateCompleted}
         onTextChange={updateTodoText}
         onDelete={removeTodo}
       />
@@ -97,7 +102,7 @@ const TodoList = ({listId}) => {
       {/* Completed todos*/}
       <List
         items={closedTodos}
-        onCompletedChange={setCompleted}
+        onCompletedChange={updateCompleted}
         onDelete={removeTodo}
       />
     </View>
