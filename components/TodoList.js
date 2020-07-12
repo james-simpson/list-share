@@ -11,7 +11,7 @@ import {firebase} from '../src/firebase/config';
 // There may be a better way to fix it, but this works
 firebase.firestore().settings({experimentalForceLongPolling: true});
 
-const TodoList = ({listId}) => {
+const TodoList = ({listId, user}) => {
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,7 +45,7 @@ const TodoList = ({listId}) => {
     const todo = {
       text: text,
       // TODO - use real user id
-      authorId: 'myUserId',
+      authorId: user.uid,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       completed: false,
     };

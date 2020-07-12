@@ -8,12 +8,12 @@ const firebaseConfig = {
   // databaseURL: 'https://list-share-564e9.firebaseio.com',
   projectId: 'list-share-564e9',
   storageBucket: 'list-share-564e9.appspot.com',
-//   messagingSenderId: '12345-insert-yourse',
+  messagingSenderId: '757393836036',
   appId: '1:757393836036:android:b0bb2850a8b890aab30d51',
 };
 
 if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig);
 }
 
-export { firebase };
+export {firebase};

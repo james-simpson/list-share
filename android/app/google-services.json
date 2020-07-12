@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "757393836036",
+    "firebase_url": "https://list-share-564e9.firebaseio.com",
+    "project_id": "list-share-564e9",
+    "storage_bucket": "list-share-564e9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:757393836036:android:b0bb2850a8b890aab30d51",
+        "android_client_info": {
+          "package_name": "com.listshare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "757393836036-fm7v53ve8ohc9ab38u296ir1oikfnmpc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzIR7S6lCe3KCKSC7BMJBoz-z2caz6m9M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "757393836036-fm7v53ve8ohc9ab38u296ir1oikfnmpc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

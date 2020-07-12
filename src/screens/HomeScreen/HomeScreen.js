@@ -1,13 +1,12 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
-  Image,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
   StyleSheet,
   ScrollView,
 } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
 
 import {firebase} from '../../firebase/config';
 import TodoList from '../../../components/TodoList';
@@ -16,9 +15,29 @@ const onLogoutPress = () => {
   firebase.auth().signOut();
 };
 
-export default function HomeScreen(props) {
+async function saveTokenToDatabase(user, token) {
+  await firebase
+    .firestore()
+    .collection('notificationTokens')
+    .doc(token)
+    .set({userId: user.uid, token});
+}
+
+export default function HomeScreen({user}) {
   // TODO - don't hardcode
   const listId = 'rafEvIFrryiaU2u4Ezq7';
+
+  useEffect(() => {
+    messaging()
+      .getToken()
+      .then(token => {
+        return saveTokenToDatabase(user, token);
+      });
+
+    messaging().onTokenRefresh(token => {
+      saveTokenToDatabase(user, token);
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -28,7 +47,7 @@ export default function HomeScreen(props) {
       {/* keyboardShouldPersistTaps='always' allows moving focus from
           one TextInput to another within a ScrollView in one touch */}
       <ScrollView keyboardShouldPersistTaps="always">
-        <TodoList listId={listId} />
+        <TodoList listId={listId} user={user} />
       </ScrollView>
     </View>
   );
