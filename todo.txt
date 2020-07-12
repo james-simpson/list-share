@@ -1,4 +1,3 @@
 - Turn all class components into function components
 - Share list with others
-- Implement login
-- Notifications
+- Store display name and use in notifications

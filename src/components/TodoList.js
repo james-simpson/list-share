@@ -4,7 +4,7 @@ import List from './List';
 import AddItemInput from './AddItemInput';
 import _ from 'lodash';
 
-import {firebase} from '../src/firebase/config';
+import {firebase} from '../firebase/config';
 
 // Added to work around an with the firebase connection
 // See https://github.com/firebase/firebase-js-sdk/issues/2923

@@ -8,8 +8,8 @@ import {
 } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 
-import {firebase} from '../../firebase/config';
-import TodoList from '../../../components/TodoList';
+import {firebase} from '../firebase/config';
+import TodoList from '../components/TodoList';
 
 const onLogoutPress = () => {
   firebase.auth().signOut();
